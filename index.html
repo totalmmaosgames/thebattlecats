@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>The Battle Gatos ⚔️🐱</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>">
+
+<!-- Fontes Google para tipografia autêntica arcade/comic de The Battle Cats -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Titan+One&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===== TELA: Título ===== -->
+<div id="title" class="screen">
+  <div class="titlebox">
+    <canvas id="titleCanvas" width="340" height="230"></canvas>
+    <h1>THE BATTLE <span>GATOS</span></h1>
+    <p class="tag">⚔️ Defenda a base · Dispare o Canhão Laser · Conquiste o mundo!</p>
+    <button id="btnPlay" class="big primary">▶ JOGAR</button>
+    <button id="btnArmy" class="big">🐱 EXÉRCITO</button>
+    <button id="btnReset" class="small danger">Apagar progresso</button>
+  </div>
+</div>
+
+<!-- ===== Barra de recursos (mapa/exército) ===== -->
+<div id="topbar" class="hidden">
+  <span class="res">🐟 <b id="resFish">0</b></span>
+  <span class="res">✨ <b id="resXp">0</b></span>
+</div>
+
+<!-- ===== TELA: Mapa de fases ===== -->
+<div id="map" class="screen hidden">
+  <div class="panel wide">
+    <div class="viewhead">
+      <h2>🗺️ Escolha o país / fase</h2>
+      <div>
+        <button id="btnMapArmy" class="small">🐱 Exército</button>
+        <button id="btnMapBack" class="small">← Título</button>
+      </div>
+    </div>
+    <div id="stageMap"></div>
+  </div>
+</div>
+
+<!-- ===== TELA: Exército (desbloquear/melhorar gatos) ===== -->
+<div id="army" class="screen hidden">
+  <div class="panel wide">
+    <div class="viewhead">
+      <h2>🐱 Seu Exército de Gatos</h2>
+      <button id="btnArmyBack" class="small">← Voltar</button>
+    </div>
+    <p class="muted small">Vença batalhas para desbloquear novas espécies e evoluir o nível dos seus gatos (+10% dano e HP).</p>
+    <div id="armyGrid"></div>
+  </div>
+</div>
+
+<!-- ===== TELA: Batalha (Estilo autêntico The Battle Cats) ===== -->
+<div id="battleScreen" class="screen hidden">
+  <div class="battlewrap">
+    
+    <!-- Topo da Batalha (Pause, Título da Fase, Dinheiro e Speed) -->
+    <div class="bc-top-bar">
+      <div class="bc-top-left">
+        <button id="bPause" class="bc-btn-pause" title="Pausar [P / Esc]">
+          <span class="bc-pause-bars"></span>
+        </button>
+        <div id="bStageName" class="bc-stage-title">China</div>
+      </div>
+
+      <div class="bc-top-right">
+        <div class="bc-money-box">
+          <span id="bMoneyVal">220</span><span class="bc-money-slash">/</span><span id="bMoneyCap">1500</span><span class="bc-money-cent">¢</span>
+        </div>
+        <button id="bSpeed" class="bc-btn-speed" title="Velocidade da Batalha">
+          <span class="bc-speed-icon">⚡</span> SPEED UP <span id="bSpeedVal">1x</span>
+        </button>
+        <button id="bQuit" class="bc-btn-quit" title="Abandonar Fase">✖</button>
+      </div>
+    </div>
+
+    <!-- Área do Canvas do Campo de Batalha -->
+    <div class="cwrap">
+      <canvas id="bCanvas" width="1280" height="720"></canvas>
+
+      <!-- Overlay de Pausa -->
+      <div id="pauseOverlay" class="hidden">
+        <div class="bpanel">
+          <h2>Batalha Pausada 😾</h2>
+          <p>O exército aguarda suas ordens!</p>
+          <button id="bUnpause" class="primary big">Continuar</button>
+        </div>
+      </div>
+
+      <!-- Overlay de Resultado (Vitória / Derrota) -->
+      <div id="result" class="hidden">
+        <div class="bpanel">
+          <h2 id="resTitle"></h2>
+          <p id="resRewards"></p>
+          <div class="row">
+            <button id="resRetry">🔁 Repetir</button>
+            <button id="resNext" class="primary">▶ Próxima</button>
+            <button id="resMap">🗺️ Mapa</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabuleiro Inferior de Desdobramento (Sawtooth Wooden Tray) -->
+    <div id="bTray" class="bc-tray">
+      <!-- Cerca Serrilhada de Madeira no Topo -->
+      <div class="bc-sawtooth-fence"></div>
+
+      <div class="bc-tray-content">
+        <!-- 1. Botão do Trabalhador Gato (Worker Cat) -->
+        <div class="bc-worker-block">
+          <div id="bWorkerLvlTxt" class="bc-worker-level">Level 1</div>
+          <button id="bWorkerBtn" class="bc-worker-btn" title="Melhorar Carteira [W]">
+            <div class="bc-worker-sun"></div>
+            <canvas id="bWorkerCanvas" width="70" height="70"></canvas>
+          </button>
+          <div id="bWorkerCostTxt" class="bc-worker-cost">220¢</div>
+        </div>
+
+        <!-- 2. Deck de Cartas dos Gatos -->
+        <div class="bc-deck-block">
+          <div class="bc-deck-controls">
+            <button id="bRowToggle" class="bc-deck-toggle">▲ Fila 2 (6-9)</button>
+          </div>
+          <div id="bUnits" class="bc-deck-slots"></div>
+        </div>
+
+        <!-- 3. Botão do Canhão Laser dos Gatos -->
+        <div class="bc-cannon-block">
+          <div id="bCannonStatusTxt" class="bc-cannon-status">0%</div>
+          <button id="bCannonBtn" class="bc-cannon-btn" disabled title="Disparar Canhão & Invocar Gato Gigante [Espaço]">
+            <canvas id="bCannonCanvas" width="72" height="72"></canvas>
+            <svg class="bc-cannon-svg" viewBox="0 0 76 76">
+              <circle class="bc-cannon-bg-circle" cx="38" cy="38" r="34"></circle>
+              <circle class="bc-cannon-circle" cx="38" cy="38" r="34"></circle>
+            </svg>
+          </button>
+          <div class="bc-cannon-label">GATO GIGANTE [Espaço]</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="js/audio.js"></script>
+<script src="js/data.js"></script>
+<script src="js/sprites.js"></script>
+<script src="js/save.js"></script>
+<script src="js/battle.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
