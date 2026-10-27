@@ -21,7 +21,7 @@ if (-not (Test-Path $tokenFile)) {
     exit 1
 }
 
-$Token = (Get-Content $tokenFile -Raw).Trim()
+$Token = (Get-Content $tokenFile | Where-Object { $_.Trim() } | Select-Object -Last 1).Trim()
 
 if (-not $Token) {
     Write-Host "ERRO: O token.txt esta vazio! Cole seu token la dentro." -ForegroundColor Red
