@@ -55,9 +55,10 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "Enviando..." -ForegroundColor Cyan
-git push -f origin main 2>&1 | Out-Null
+$null = git push -f origin main 2>&1
+$pushOk = $LASTEXITCODE
 
-if ($LASTEXITCODE -eq 0) {
+if ($pushOk -eq 0) {
     Write-Host ""
     Write-Host "SUCESSO! Jogo atualizado!" -ForegroundColor Green
     Write-Host "Site: $site" -ForegroundColor Cyan
