@@ -1,0 +1,46 @@
+============================================================
+  COMO ATUALIZAR O JOGO NO GITHUB
+============================================================
+
+O je mais facil:
+
+  De um DULO CLICURE no arquivo "ATUALIZAR.bat"
+
+------------------------------------------------------------
+Se o .bat nao funcionar, abra o PowerShell na pasta
+e digite o comando abaixo:
+
+  powershell -ExecutionPolicy Bypass -File .\atualizar-github.ps1
+
+------------------------------------------------------------
+DEU ERRO "scripts desabilitados" ou "execucao de scripts
+desabilidata"?
+
+Isso acontece porque o Windows bloqueia scripts .ps1 por
+padrao. Duas solucoes:
+
+1) Use o ATUALIZAR.bat (ja contorna o problema)
+
+2) Ou libere os scripts para o seu usuario, UMA vez, no
+   PowerShell (Menu Inicio > PowerShell > clique direito
+   > Executar como administrador) e digite:
+
+     Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+
+   Confirme com S e Enter. Depois disso qualquer .ps1 roda.
+
+------------------------------------------------------------
+DEPOIS DE ATUALIZAR
+
+  - Aguarde 1 ou 2 minutos
+  - No navegador, use Ctrl+F5 para carregar a versao nova
+
+  Site: https://totalmmaosgames.github.io/thebattlecats/
+
+------------------------------------------------------------
+O TOKEN EXPIROU?
+  - Crie um novo em: github.com/settings/tokens
+  - Abra o arquivo "token.txt"
+  - Apague a linha antiga e cole o novo token
+  - Rode o ATUALIZAR.bat de novo
+============================================================

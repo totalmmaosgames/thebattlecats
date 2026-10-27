@@ -5,7 +5,7 @@
 #  COMO USAR:
 #  1. Abra o arquivo "token.txt" (na mesma pasta deste script)
 #  2. Apague a linha e cole o SEU token do GitHub
-#  3. De um clique duplo neste script (ou botao direito > Executar com PowerShell)
+#  3. De um clique duplo em "ATUALIZAR.bat"
 #
 #  * Se o token expirar, e so trocar no token.txt e rodar de novo!
 #
@@ -45,7 +45,7 @@ git checkout -b main 2>&1 | Out-Null
 git remote set-url origin "https://totalmmaosgames:$Token@github.com/$repo.git"
 
 git add -A 2>&1 | Out-Null
-$commitOutput = git commit -m "Update - $(Get-Date -Format 'dd/MM/yyyy HH:mm')" 2>&1
+git commit -m "Update - $(Get-Date -Format 'dd/MM/yyyy HH:mm')" 2>&1 | Out-Null
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Nenhuma alteracao nova para enviar." -ForegroundColor Yellow
@@ -55,10 +55,9 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "Enviando..." -ForegroundColor Cyan
-$null = git push -f origin main 2>&1
-$pushOk = $LASTEXITCODE
+git push -f origin main 2>&1 | Out-Null
 
-if ($pushOk -eq 0) {
+if ($LASTEXITCODE -eq 0) {
     Write-Host ""
     Write-Host "SUCESSO! Jogo atualizado!" -ForegroundColor Green
     Write-Host "Site: $site" -ForegroundColor Cyan
